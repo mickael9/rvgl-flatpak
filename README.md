@@ -11,6 +11,6 @@ $ flatpak install --user rvgl.flatpak
 
 ## Notes
 
-- Everything that will downloaded from the launcher lives inside `~/.var/app/org.rvgl.rvmm`
+- Anything downloaded from the launcher lives inside `~/.var/app/org.rvgl.rvmm`
 - Automatic updates of the launcher itself are disabled
 - `rvmm://` custom protocol handler is registered
