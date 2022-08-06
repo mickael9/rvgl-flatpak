@@ -1,0 +1,35 @@
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 1 1 * *'
+  workflow_dispatch:
+name: CI
+jobs:
+  flatpak:
+    name: "Flatpak"
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:freedesktop-21.08
+      options: --privileged
+    steps:
+    - uses: actions/checkout@v2
+    - uses: flatpak/flatpak-github-actions/flatpak-builder@v4
+      with:
+        bundle: rvgl.flatpak
+        manifest-path: org.rvgl.rvmm.yml
+        cache-key: flatpak-builder-${{ github.sha }}
+    - run: sha256sum rvgl.flatpak
+    - uses: xresloader/upload-to-github-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        file: rvgl.flatpak
+        tag_name: latest
+        overwrite: true
+        update_latest_release: true
+        draft: false
+    - uses: rickstaa/action-create-tag@v1
+      with:
+        tag: latest
+        force_push_tag: true

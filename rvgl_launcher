@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd "/app/share/rvgl-launcher"
+
+exec ./rvgl_launcher.py "$@"

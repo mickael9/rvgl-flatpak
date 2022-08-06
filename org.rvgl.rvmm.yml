@@ -1,0 +1,82 @@
+app-id: org.rvgl.rvmm
+runtime: org.freedesktop.Platform
+runtime-version: '21.08'
+sdk: org.freedesktop.Sdk
+command: rvgl_launcher
+finish-args:
+  # X11 + XShm access
+  - --share=ipc
+  - --socket=x11
+  # Wayland access
+  - --socket=wayland
+  # OpenGL rendering / controller support
+  - --device=all
+  # PulseAudio
+  - --socket=pulseaudio
+  # Needs to talk to the network:
+  - --share=network
+
+cleanup:
+  - '*.la'
+  - '*.a'
+  - '/lib/debug'
+
+modules:
+  - python3-modules.json
+
+  - name: p7zip
+    cleanup:
+      - /include
+      - /share
+      - /man
+    buildsystem: simple
+    build-commands:
+      - make -j $FLATPAK_BUILDER_N_JOBS 7z
+      - make install DEST_HOME="${FLATPAK_DEST}"
+
+    sources:
+      - type: archive
+        url: https://github.com/jinfeihan57/p7zip/archive/refs/tags/v17.04.tar.gz
+        sha256: ea029a2e21d2d6ad0a156f6679bd66836204aa78148a4c5e498fe682e77127ef
+
+  - name: enet
+    cleanup:
+      - /include
+      - /share
+    sources:
+      - type: archive
+        url: http://enet.bespin.org/download/enet-1.3.17.tar.gz
+        sha512: efa0cb093a6ca295e5012a4fdebc5ffd6516a66a967e97b386b72781b18ce4a118c9bf94e87adbbdcd0ed441e22c62a05c24ff39fd6b475919e8efe9ab4715e4
+
+  - name: fluidsynth
+    buildsystem: cmake
+    cleanup:
+      - /bin
+      - /include
+      - /share
+    config-opts:
+      - -DLIB_SUFFIX=''
+    sources:
+      - type: archive
+        url: https://github.com/fluidsynth/fluidsynth/archive/v2.2.8.tar.gz
+        sha512: 8173f2d368a214cf1eb7faae2f6326db43fb094ec9c83e652f953290c3f29c34ebd0b92cbb439bea8d814d3a7e4f9dc0c18c648df1d414989d5d8b4700c79535
+
+  - name: rvgl_launcher
+    buildsystem: simple
+    build-commands:
+      - mkdir -p "${FLATPAK_DEST}/share/rvgl-launcher/"
+      - cp -r rvgl_launcher.py repos icons rv_launcher -t "${FLATPAK_DEST}/share/rvgl-launcher"
+      - mkdir "${FLATPAK_DEST}/share/rvgl-launcher/.git" # avoid auto updates (which wouldn't work anyway)
+      - install -D org.rvgl.rvmm.desktop -t "${FLATPAK_DEST}/share/applications/"
+      - install -D icons/icon.png  "${FLATPAK_DEST}/share/icons/hicolor/256x256/apps/org.rvgl.rvmm.png"
+      - install -D rvgl_launcher -t "${FLATPAK_DEST}/bin/"
+    sources:
+      - type: file
+        path: org.rvgl.rvmm.desktop
+
+      - type: git
+        url: https://gitlab.com/re-volt/rvgl-launcher.git
+        branch: master
+
+      - type: file
+        path: rvgl_launcher

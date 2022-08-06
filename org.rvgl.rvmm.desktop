@@ -1,0 +1,9 @@
+[Desktop Entry]
+Comment=Launcher and package manager for RVGL
+Terminal=false
+Name=RVGL Launcher
+Type=Application
+Categories=Game;
+Icon=org.rvgl.rvmm
+Exec=rvgl_launcher %u
+MimeType=x-scheme-handler/rvmm;
