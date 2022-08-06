@@ -7,6 +7,8 @@ finish-args:
   # X11 + XShm access
   - --share=ipc
   - --socket=x11
+  # Discord Rich Presence
+  - --filesystem=xdg-run/discord-ipc-0
   # Wayland access
   - --socket=wayland
   # OpenGL rendering / controller support
