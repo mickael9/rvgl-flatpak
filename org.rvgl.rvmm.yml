@@ -9,6 +9,9 @@ finish-args:
   - --socket=x11
   # Discord Rich Presence
   - --filesystem=xdg-run/discord-ipc-0
+  # Read only access to host files
+  # (mainly because wxPython does not support file drag-and-drop using XDG Desktop Portals)
+  - --filesystem=host:ro
   # Wayland access
   - --socket=wayland
   # OpenGL rendering / controller support
