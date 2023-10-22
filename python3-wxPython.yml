@@ -1,0 +1,87 @@
+name: python3-wxPython
+buildsystem: simple
+build-commands: []
+modules:
+  - name: openblas
+    no-autogen: true
+    make-args:
+      - DYNAMIC_ARCH=1
+      - FC=gfortran
+      - NO-LAPACKE=1
+      - USE_OPENMP=0
+    make-install-args:
+      - PREFIX=/app
+    cleanup:
+      - /include
+    sources:
+      - type: git
+        url: https://github.com/OpenMathLib/OpenBLAS
+        tag: v0.3.24
+        commit: 9f815cf1bf16b4e64d4aee681b33558fc090b62a
+        x-checker-data:
+          type: git
+          tag-pattern: ^(v[\d\.]+)$
+  - name: python3-build-dependencies
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+        --prefix=${FLATPAK_DEST} attrdict3 packaging pyproject_metadata --no-build-isolation
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/d7/3c/a7d33166f92b50ca0e154411c351430700c21d8115b93c515ae9137a91f6/attrdict3-2.0.2-py2.py3-none-any.whl
+        sha256: a98b72de6a3f20b0997cc7efbba3555af6558ed9a97de4468a3f81cac11595dc
+        x-checker-data:
+          type: pypi
+          packagetype: bdist_wheel
+          name: attrdict3
+      - type: file
+        url: https://files.pythonhosted.org/packages/ec/1a/610693ac4ee14fcdf2d9bf3c493370e4f2ef7ae2e19217d7a237ff42367d/packaging-23.2-py3-none-any.whl
+        sha256: 8c491190033a9af7e1d931d0b5dacc2ef47509b34dd0de67ed209b5203fc88c7
+        x-checker-data:
+          name: packaging
+          packagetype: bdist_wheel
+          type: pypi
+      - type: file
+        url: https://files.pythonhosted.org/packages/c4/cb/4678dfd70cd2f2d8969e571cdc1bb1e9293c698f8d1cf428fadcf48d6e9f/pyproject_metadata-0.7.1-py3-none-any.whl
+        sha256: 28691fbb36266a819ec56c9fa1ecaf36f879d6944dfde5411e87fc4ff793aa60
+        x-checker-data:
+          name: pyproject-metadata
+          packagetype: bdist_wheel
+          type: pypi
+  - name: python3-numpy
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+        --prefix=${FLATPAK_DEST} numpy --no-build-isolation
+    cleanup:
+      - /bin
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/78/23/f78fd8311e0f710fe1d065d50b92ce0057fe877b8ed7fd41b28ad6865bfc/numpy-1.26.1.tar.gz
+        sha256: c8c6c72d4a9f831f328efb1312642a1cafafaa88981d9ab76368d50d07d93cbe
+        x-checker-data:
+          type: pypi
+          name: numpy
+  - name: python3-wxPython
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
+        --prefix=${FLATPAK_DEST} wxPython --no-build-isolation
+    build-options:
+      env:
+        WXPYTHON_BUILD_ARGS: --use_syswx --nodoc
+    cleanup:
+      - /bin
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/80/d7/c4b258c9098b469c4a4e77b0a99b5f4fd21e359c2e486c977d231f52fc71/Pillow-10.1.0.tar.gz
+        sha256: e6bf8de6c36ed96c86ea3b6e1d5273c53f46ef518a062464cd7ef5dd2cf92e38
+        x-checker-data:
+          type: pypi
+          name: Pillow
+      - type: file
+        url: https://files.pythonhosted.org/packages/aa/64/d749e767a8ce7bdc3d533334e03bb1106fc4e4803d16f931fada9007ee13/wxPython-4.2.1.tar.gz
+        sha256: e48de211a6606bf072ec3fa778771d6b746c00b7f4b970eb58728ddf56d13d5c
+        x-checker-data:
+          type: pypi
+          name: wxPython

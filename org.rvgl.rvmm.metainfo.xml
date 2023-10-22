@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2023 mickael9 -->
+<component type="desktop-application">
+  <id>org.rvgl.rvmm</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <name>RVGL</name>
+  <summary>Launcher and package manager for RVGL</summary>
+  <description>
+    <p>RVGL Launcher is a cross-platform installer, launcher and package manager for RVGL, a cross-platform rewrite / port of Re-Volt that runs natively on a wide variety of platforms.</p>
+    <p>Features:</p>
+    <ul>
+      <li>Install game and content packs and keep them up-to-date</li>
+      <li>View list of online events and join them directly</li>
+      <li>Enable or disable content packs on the fly</li>
+      <li>Add your own content and repositories</li>
+    </ul>
+  </description>
+  <developer_name>Huki</developer_name>
+  <launchable type="desktop-id">org.rvgl.rvmm.desktop</launchable>
+  <url type="homepage">https://re-volt.gitlab.io/rvgl-launcher/</url>
+  <url type="bugtracker">https://gitlab.com/re-volt/rvgl-launcher/-/issues</url>
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">intense</content_attribute>
+  </content_rating>
+  <releases>
+    <release date="2023-03-09" version="0.1.23.510a1"/>
+  </releases>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://gitlab.com/re-volt/rvgl-launcher/-/raw/480830d596da62e792798803d052e594b8edc013/docs/src/screens/launch.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://gitlab.com/re-volt/rvgl-launcher/-/raw/480830d596da62e792798803d052e594b8edc013/docs/src/screens/packs.png</image>
+    </screenshot>
+  </screenshots>
+</component>

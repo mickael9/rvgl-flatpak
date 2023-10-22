@@ -1,33 +1,61 @@
 app-id: org.rvgl.rvmm
 runtime: org.freedesktop.Platform
-runtime-version: '21.08'
+runtime-version: '23.08'
 sdk: org.freedesktop.Sdk
 command: rvgl_launcher
 finish-args:
   # X11 + XShm access
   - --share=ipc
   - --socket=x11
+  # PulseAudio
+  - --socket=pulseaudio
   # Discord Rich Presence
-  - --filesystem=xdg-run/discord-ipc-0
+  - --filesystem=xdg-run/discord-ipc-0:rw
   # Read only access to host files
   # (mainly because wxPython does not support file drag-and-drop using XDG Desktop Portals)
   - --filesystem=host:ro
-  # Wayland access
-  - --socket=wayland
+  - --filesystem=home:ro
   # OpenGL rendering / controller support
   - --device=all
-  # PulseAudio
-  - --socket=pulseaudio
   # Needs to talk to the network:
   - --share=network
+  # Single-instance detection (see rvgl_launcher script)
+  - --allow=per-app-dev-shm
 
 cleanup:
+  - /lib/cmake
+  - /lib/pkgconfig
+  - /lib/wx
+  - /share/aclocal
+  - /share/bakefile
   - '*.la'
   - '*.a'
-  - '/lib/debug'
 
 modules:
-  - python3-modules.json
+  - name: wxWidgets
+    cleanup:
+      - /bin
+      - /include
+      - /share
+      - /man
+    config-opts:
+      - --without-opengl
+      - --without-subdirs
+    sources:
+      - type: archive
+        url: https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.3/wxWidgets-3.2.3.tar.bz2
+        sha256: c170ab67c7e167387162276aea84e055ee58424486404bba692c401730d1a67a
+        x-checker-data:
+          type: html
+          url: https://wxwidgets.org/downloads
+          version-pattern: 'Latest Stable Release: ([\d\.]+)'
+          url-template: https://github.com/wxWidgets/wxWidgets/releases/download/v$version/wxWidgets-$version.tar.bz2
+      - type: script
+        commands:
+          - cp -p /usr/share/automake-*/config.{sub,guess} .
+          - autoconf -f -B build/autoconf_prepend-include
+
+  - python3-wxPython.yml
 
   - name: p7zip
     cleanup:
@@ -40,31 +68,15 @@ modules:
       - make install DEST_HOME="${FLATPAK_DEST}"
 
     sources:
-      - type: archive
-        url: https://github.com/jinfeihan57/p7zip/archive/refs/tags/v17.04.tar.gz
-        sha256: ea029a2e21d2d6ad0a156f6679bd66836204aa78148a4c5e498fe682e77127ef
+      - type: git
+        url: https://github.com/p7zip-project/p7zip.git
+        tag: v17.05
+        commit: a45b8830cafda25e76d7120b0462daa82c382a7a
+        x-checker-data:
+          type: git
+          tag-pattern: "^v([\\d.]+)$"
 
-  - name: enet
-    cleanup:
-      - /include
-      - /share
-    sources:
-      - type: archive
-        url: http://enet.bespin.org/download/enet-1.3.17.tar.gz
-        sha512: efa0cb093a6ca295e5012a4fdebc5ffd6516a66a967e97b386b72781b18ce4a118c9bf94e87adbbdcd0ed441e22c62a05c24ff39fd6b475919e8efe9ab4715e4
-
-  - name: fluidsynth
-    buildsystem: cmake
-    cleanup:
-      - /bin
-      - /include
-      - /share
-    config-opts:
-      - -DLIB_SUFFIX=''
-    sources:
-      - type: archive
-        url: https://github.com/fluidsynth/fluidsynth/archive/v2.2.8.tar.gz
-        sha512: 8173f2d368a214cf1eb7faae2f6326db43fb094ec9c83e652f953290c3f29c34ebd0b92cbb439bea8d814d3a7e4f9dc0c18c648df1d414989d5d8b4700c79535
+  - python3-modules.json
 
   - name: rvgl_launcher
     buildsystem: simple
@@ -72,16 +84,24 @@ modules:
       - mkdir -p "${FLATPAK_DEST}/share/rvgl-launcher/"
       - cp -r rvgl_launcher.py repos icons rv_launcher -t "${FLATPAK_DEST}/share/rvgl-launcher"
       - mkdir "${FLATPAK_DEST}/share/rvgl-launcher/.git" # avoid auto updates (which wouldn't work anyway)
-      - install -D org.rvgl.rvmm.desktop -t "${FLATPAK_DEST}/share/applications/"
-      - install -D icons/icon.png  "${FLATPAK_DEST}/share/icons/hicolor/256x256/apps/org.rvgl.rvmm.png"
+      - install -D ${FLATPAK_ID}.desktop -t "${FLATPAK_DEST}/share/applications/"
+      - install -D ${FLATPAK_ID}.metainfo.xml "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml"
+      - install -D icons/icon.png  "${FLATPAK_DEST}/share/icons/hicolor/256x256/apps/${FLATPAK_ID}.png"
       - install -D rvgl_launcher -t "${FLATPAK_DEST}/bin/"
     sources:
       - type: file
         path: org.rvgl.rvmm.desktop
 
+      - type: file
+        path: org.rvgl.rvmm.metainfo.xml
+
       - type: git
         url: https://gitlab.com/re-volt/rvgl-launcher.git
-        branch: master
+        tag: 0.1.23.510a1
+        commit: 80c033b239641c655b2963f9605b59468ef992e3
+        x-checker-data:
+          type: git
+          tag-pattern: '^(\d+(?:\.\d+)+(?:a\d+)?)$'
 
       - type: file
         path: rvgl_launcher

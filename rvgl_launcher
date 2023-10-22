@@ -2,4 +2,46 @@
 
 cd "/app/share/rvgl-launcher"
 
-exec ./rvgl_launcher.py "$@"
+mkdir -p "$XDG_DATA_HOME/rvmm/"
+
+if [[ ! -f "$XDG_CONFIG_HOME/rvmm/config.json" ]]; then
+    # Create default config to disable registering discord handler & rvmm protocol handlers
+    # (they would have no effect and are already handled by flatpak)
+    echo > "$XDG_CONFIG_HOME/rvmm/config.json" <<EOF
+{
+    "uri-registered": true,
+    "lobby-registered": true
+}
+EOF
+fi
+
+# Nasty hack to make wx.SingleInstanceChecker work from a Flatpak
+#
+# To determine if multiple instances are running, wx.SingleInstanceChecker:
+# - creates a PID file on first instance
+# - checks that the PID is valid and different than the current PID
+#
+# Since we're running in a Flatpak with a private process namespace,
+# the PID will always be the same between multiple executions.
+#
+# With this hack, if we detect that another instance is running, we replace the
+# PID file contents with the PID of this script (which will be smaller than the
+# PID of the launcher).
+#
+# Since we can now longer rely on the PID validity to check the health of the
+# original process, we use a file in /dev/shm to check for that.
+#
+# It is important to use "per-app-dev-sh" finish flag on the flatpak, that way,
+# all processes from this flatpak will share a common /dev/shm and it will be
+# automatically deleted by flatpak when all processes are terminated.
+SHM_FILE=/dev/shm/rvmm-is-running
+PID_FILE=$XDG_DATA_HOME/rvmm/rvmm-bd67d014-$(id -un)
+if [[ -e $PID_FILE && -e $SHM_FILE ]]; then
+    echo -n $$ > $PID_FILE
+else
+    rm -f $PID_FILE
+    trap "rm $SHM_FILE" EXIT
+    touch $SHM_FILE
+fi
+
+./rvgl_launcher.py "$@"
