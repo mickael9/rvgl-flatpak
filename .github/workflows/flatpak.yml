@@ -1,6 +1,8 @@
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 name: CI
 jobs:
@@ -16,8 +18,16 @@ jobs:
       with:
         bundle: rvgl.flatpak
         manifest-path: org.rvgl.rvmm.yml
-        cache-key: flatpak-builder
-    - run: sha256sum rvgl.flatpak
+  deploy:
+    needs: flatpak
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/download-artifact@v3
+      with:
+        name: rvgl-x86_64
+
     - uses: xresloader/upload-to-github-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

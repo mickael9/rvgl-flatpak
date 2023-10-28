@@ -74,7 +74,7 @@ modules:
         commit: a45b8830cafda25e76d7120b0462daa82c382a7a
         x-checker-data:
           type: git
-          tag-pattern: "^v([\\d.]+)$"
+          tag-pattern: ^v([\d.]+)$
 
   - python3-modules.json
 
@@ -101,7 +101,8 @@ modules:
         commit: 80c033b239641c655b2963f9605b59468ef992e3
         x-checker-data:
           type: git
-          tag-pattern: '^(\d+(?:\.\d+)+(?:a\d+)?)$'
+          tag-pattern: ^(\d+(?:\.\d+)+(?:a\d+)?)$
+          is-important: true
 
       - type: file
         path: rvgl_launcher
