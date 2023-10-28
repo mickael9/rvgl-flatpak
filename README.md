@@ -5,7 +5,7 @@ This unofficial repository provides automatic builds of a Flatpak package for th
 ## Installation
 
 ```bash
-$ wget https://github.com/mickael9/rvgl-flatpak/releases/download/latest/rvgl.flatpak
+$ wget https://github.com/mickael9/rvgl-flatpak/releases/latest/download/rvgl.flatpak
 $ flatpak install --user rvgl.flatpak
 ```
 
