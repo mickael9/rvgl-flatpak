@@ -2,6 +2,19 @@ name: python3-wxPython
 buildsystem: simple
 build-commands: []
 modules:
+  - name: patchelf
+    cleanup:
+      - /bin
+      - /share
+    sources:
+      - type: git
+        url: https://github.com/NixOS/patchelf
+        commit: 99c24238981b7b1084313aca8f5c493bb46f302c
+        tag: 0.18.0
+        x-checker-data:
+          type: git
+          tag-pattern: ^([\d\.]+)$
+
   - name: openblas
     no-autogen: true
     make-args:
@@ -16,16 +29,19 @@ modules:
     sources:
       - type: git
         url: https://github.com/OpenMathLib/OpenBLAS
-        tag: v0.3.24
-        commit: 9f815cf1bf16b4e64d4aee681b33558fc090b62a
+        tag: v0.3.26
+        commit: 6c77e5e314474773a7749357b153caba4ec3817d
         x-checker-data:
           type: git
           tag-pattern: ^(v[\d\.]+)$
+
   - name: python3-build-dependencies
     buildsystem: simple
     build-commands:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} attrdict3 packaging pyproject_metadata --no-build-isolation
+        --prefix=${FLATPAK_DEST} attrdict3 meson_python packaging pyproject_metadata --no-build-isolation
+    cleanup:
+      - /lib
     sources:
       - type: file
         url: https://files.pythonhosted.org/packages/d7/3c/a7d33166f92b50ca0e154411c351430700c21d8115b93c515ae9137a91f6/attrdict3-2.0.2-py2.py3-none-any.whl
@@ -34,6 +50,13 @@ modules:
           type: pypi
           packagetype: bdist_wheel
           name: attrdict3
+      - type: file
+        url: https://files.pythonhosted.org/packages/1f/60/b10b11ab470a690d5777310d6cfd1c9bdbbb0a1313a78c34a1e82e0b9d27/meson_python-0.15.0-py3-none-any.whl
+        sha256: 3ae38253ff02b2e947a05e362a2eaf5a9a09d133c5666b4123399ee5fbf2e591
+        x-checker-data:
+          type: pypi
+          packagetype: bdist_wheel
+          name: meson-python
       - type: file
         url: https://files.pythonhosted.org/packages/ec/1a/610693ac4ee14fcdf2d9bf3c493370e4f2ef7ae2e19217d7a237ff42367d/packaging-23.2-py3-none-any.whl
         sha256: 8c491190033a9af7e1d931d0b5dacc2ef47509b34dd0de67ed209b5203fc88c7
@@ -48,6 +71,7 @@ modules:
           name: pyproject-metadata
           packagetype: bdist_wheel
           type: pypi
+
   - name: python3-numpy
     buildsystem: simple
     build-commands:
@@ -57,11 +81,12 @@ modules:
       - /bin
     sources:
       - type: file
-        url: https://files.pythonhosted.org/packages/78/23/f78fd8311e0f710fe1d065d50b92ce0057fe877b8ed7fd41b28ad6865bfc/numpy-1.26.1.tar.gz
-        sha256: c8c6c72d4a9f831f328efb1312642a1cafafaa88981d9ab76368d50d07d93cbe
+        url: https://files.pythonhosted.org/packages/65/6e/09db70a523a96d25e115e71cc56a6f9031e7b8cd166c1ac8438307c14058/numpy-1.26.4.tar.gz
+        sha256: 2a02aba9ed12e4ac4eb3ea9421c420301a0c6460d9830d74a9df87efa4912010
         x-checker-data:
           type: pypi
           name: numpy
+
   - name: python3-wxPython
     buildsystem: simple
     build-commands:
@@ -74,8 +99,8 @@ modules:
       - /bin
     sources:
       - type: file
-        url: https://files.pythonhosted.org/packages/80/d7/c4b258c9098b469c4a4e77b0a99b5f4fd21e359c2e486c977d231f52fc71/Pillow-10.1.0.tar.gz
-        sha256: e6bf8de6c36ed96c86ea3b6e1d5273c53f46ef518a062464cd7ef5dd2cf92e38
+        url: https://files.pythonhosted.org/packages/f8/3e/32cbd0129a28686621434cbf17bb64bf1458bfb838f1f668262fefce145c/pillow-10.2.0.tar.gz
+        sha256: e87f0b2c78157e12d7686b27d63c070fd65d994e8ddae6f328e0dcf4a0cd007e
         x-checker-data:
           type: pypi
           name: Pillow
