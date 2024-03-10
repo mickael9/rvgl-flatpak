@@ -32,25 +32,6 @@ cleanup:
   - '*.a'
 
 modules:
-  - name: wxWidgets
-    cleanup:
-      - /bin
-      - /include
-      - /share
-      - /man
-    config-opts:
-      - --without-opengl
-      - --without-subdirs
-
-    sources:
-      - type: git
-        commit: 085a136dcb11aca5b1102193f006f8056d5f0876
-        tag: v3.2.4
-        url: https://github.com/wxWidgets/wxWidgets
-        x-checker-data:
-          type: git
-          tag-pattern: ^v([\d\.]+)$
-
   - python3-modules.yml
 
   - name: p7zip
