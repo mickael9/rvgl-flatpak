@@ -4,7 +4,7 @@
   <id>org.rvgl.rvmm</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
-  <name>RVGL</name>
+  <name>RVGL Launcher</name>
   <summary>Launcher and package manager for RVGL</summary>
   <description>
     <p>RVGL Launcher is a cross-platform installer, launcher and package manager for RVGL, a cross-platform rewrite / port of Re-Volt that runs natively on a wide variety of platforms.</p>
