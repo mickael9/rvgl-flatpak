@@ -1,43 +1,79 @@
+name: CI
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
-name: CI
+  repository_dispatch:
+
 jobs:
   flatpak:
-    name: "Flatpak"
+    name: Flatpak
     runs-on: ubuntu-latest
+
     container:
-      image: bilelmoussaoui/flatpak-github-actions:freedesktop-23.08
+      image: ghcr.io/andyholmes/flatter/freedesktop:23.08
       options: --privileged
+
     steps:
-    - uses: actions/checkout@v3
-    - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+    - uses: actions/checkout@v4
+
+    - uses: andyholmes/flatter@main
       with:
-        bundle: rvgl.flatpak
-        manifest-path: org.rvgl.rvmm.yml
+        files: org.rvgl.rvmm.yml
+        upload-bundles: true
+        upload-pages-artifact: true
+        upload-pages-includes: |
+          rvgl.flatpakref
+
   deploy:
+    name: Deploy
+    if: ${{ github.ref == 'refs/heads/main' }}
+
     needs: flatpak
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
-    steps:
-    - uses: actions/checkout@v3
-    - uses: actions/download-artifact@v3
-      with:
-        name: rvgl-x86_64
 
-    - uses: xresloader/upload-to-github-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      id-token: write
+      pages: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - name: GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+  release:
+    name: Release
+    if: ${{ github.ref == 'refs/heads/main' }}
+
+    needs: flatpak
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/download-artifact@v4
       with:
-        file: rvgl.flatpak
-        tag_name: latest
-        overwrite: true
-        update_latest_release: true
-        draft: false
+        name: org.rvgl.rvmm-x86_64
+
+    - run: |
+        mv org.rvgl.rvmm.flatpak rvgl.flatpak
+
     - uses: rickstaa/action-create-tag@v1
       with:
         tag: latest
         force_push_tag: true
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: latest
+        fail_on_unmatched_files: true
+        files: |
+          rvgl.flatpak

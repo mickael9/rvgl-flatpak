@@ -1,0 +1,7 @@
+[Flatpak Ref]
+Name=org.rvgl.rvmm
+Title=RVGL Launcher
+IsRuntime=false
+Url=https://mickael9.github.io/rvgl-flatpak/
+SuggestRemoteName=rvgl
+RuntimeRepo=https://dl.flathub.org/repo/flathub.flatpakrepo
